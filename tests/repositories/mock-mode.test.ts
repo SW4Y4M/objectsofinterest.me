@@ -23,6 +23,7 @@ describe("mock mode repository", () => {
 
     expect(publicObjects).toHaveLength(10);
     expect(studioObjects).toHaveLength(12);
-    expect(publicObjects.every((object) => object.imageProcessedUrl.startsWith("data:image/svg+xml;utf8,"))).toBe(true);
+    expect(publicObjects.every((object) => object.imageProcessedUrl.startsWith("https://"))).toBe(true);
+    expect(publicObjects.some((object) => object.imageProcessedUrl.startsWith("data:"))).toBe(false);
   });
 });

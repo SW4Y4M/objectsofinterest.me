@@ -1,226 +1,193 @@
+import { chooseDisplaySize } from "@/lib/domain/displaySize";
 import { createSlug } from "@/lib/domain/slug";
-import { InMemoryObjectRepository, type ObjectRepository } from "@/lib/repositories/objects";
+import {
+  publicWishlistObjectSchema,
+  type DisplaySize,
+  type EditorialTag,
+  type ObjectStatus,
+  type PublicWishlistObject,
+  type StudioWishlistObject
+} from "@/lib/domain/wishlistObject";
+import { mockWishlistObjects } from "@/lib/mock/mockObjects";
 
-function createMockImageDataUrl(label: string, tone: string, width: number, height: number) {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">
-      <rect width="100%" height="100%" fill="#ffffff"/>
-      <rect x="${width * 0.08}" y="${height * 0.1}" width="${width * 0.84}" height="${height * 0.8}" rx="${Math.min(width, height) * 0.04}" fill="${tone}" opacity=".10"/>
-      <circle cx="${width * 0.5}" cy="${height * 0.48}" r="${Math.min(width, height) * 0.22}" fill="black" opacity=".10"/>
-      <text x="${width * 0.08}" y="${height * 0.9}" font-family="ui-sans-serif, system-ui" font-size="${Math.min(width, height) * 0.06}" fill="black" opacity=".45">${label}</text>
-    </svg>
-  `;
+type MockRow = {
+  id: string;
+  name: string;
+  slug: string;
+  imageOriginalUrl: string | null;
+  imageProcessedUrl: string | null;
+  sourceUrl: string | null;
+  editorialTag: EditorialTag;
+  price: string | null;
+  currency: string | null;
+  note: string | null;
+  status: ObjectStatus;
+  displaySize: DisplaySize;
+  sourceImageProvider: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg.trim())}`;
+type CreateMockObjectRecord = {
+  name: string;
+  slug?: string;
+  editorialTag: EditorialTag;
+  status: ObjectStatus;
+  imageOriginalUrl: string | null;
+  imageProcessedUrl: string | null;
+  sourceUrl?: string | null;
+  price?: string | null;
+  currency?: string | null;
+  note?: string | null;
+  displaySize?: DisplaySize;
+  sourceImageProvider?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+type MockObjectRepository = {
+  listPublic(options?: { editorialTag?: EditorialTag }): Promise<PublicWishlistObject[]>;
+  listStudio(): Promise<StudioWishlistObject[]>;
+  createForStudio(record: CreateMockObjectRecord): Promise<StudioWishlistObject>;
+  updateObject(
+    id: string,
+    changes: Partial<
+      Pick<
+        StudioWishlistObject,
+        | "name"
+        | "slug"
+        | "editorialTag"
+        | "sourceUrl"
+        | "price"
+        | "currency"
+        | "note"
+        | "status"
+        | "imageOriginalUrl"
+        | "imageProcessedUrl"
+        | "displaySize"
+        | "sourceImageProvider"
+      >
+    >
+  ): Promise<StudioWishlistObject>;
+  archiveObject(id: string): Promise<StudioWishlistObject>;
+  seedIfEmpty(): Promise<void>;
+};
+
+function cloneRow(row: MockRow): MockRow {
+  return {
+    ...row,
+    createdAt: new Date(row.createdAt),
+    updatedAt: new Date(row.updatedAt)
+  };
 }
 
-export const mockWishlistObjects = [
-  {
-    id: "mock-1",
-    name: "Brass oil burner",
-    slug: createSlug("Brass oil burner"),
-    imageOriginalUrl: createMockImageDataUrl("Burner", "#8a5a44", 1200, 1200),
-    imageProcessedUrl: createMockImageDataUrl("Burner", "#8a5a44", 1200, 1200),
-    sourceUrl: "https://example.com/brass-oil-burner",
-    editorialTag: "Home",
-    price: "120",
-    currency: "USD",
-    note: "A small ritual object for a quiet room",
-    status: "Visible",
-    displaySize: "feature",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T10:00:00Z"),
-    updatedAt: new Date("2026-06-11T10:00:00Z")
-  },
-  {
-    id: "mock-2",
-    name: "Aluminum drafting pen",
-    slug: createSlug("Aluminum drafting pen"),
-    imageOriginalUrl: createMockImageDataUrl("Pen", "#5d6b82", 1400, 900),
-    imageProcessedUrl: createMockImageDataUrl("Pen", "#5d6b82", 1400, 900),
-    sourceUrl: null,
-    editorialTag: "Make",
-    price: null,
-    currency: null,
-    note: "A clean line for writing and sketching",
-    status: "Visible",
-    displaySize: "wide",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T09:55:00Z"),
-    updatedAt: new Date("2026-06-11T09:55:00Z")
-  },
-  {
-    id: "mock-3",
-    name: "Merino overcoat",
-    slug: createSlug("Merino overcoat"),
-    imageOriginalUrl: createMockImageDataUrl("Coat", "#7a6b55", 900, 1400),
-    imageProcessedUrl: createMockImageDataUrl("Coat", "#7a6b55", 900, 1400),
-    sourceUrl: null,
-    editorialTag: "Wear",
-    price: "340",
-    currency: "USD",
-    note: null,
-    status: "Visible",
-    displaySize: "tall",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T09:40:00Z"),
-    updatedAt: new Date("2026-06-11T09:40:00Z")
-  },
-  {
-    id: "mock-4",
-    name: "Desk lamp",
-    slug: createSlug("Desk lamp"),
-    imageOriginalUrl: createMockImageDataUrl("Lamp", "#567a78", 1200, 1200),
-    imageProcessedUrl: createMockImageDataUrl("Lamp", "#567a78", 1200, 1200),
-    sourceUrl: "https://example.com/desk-lamp",
-    editorialTag: "Work",
-    price: "89",
-    currency: "USD",
-    note: null,
-    status: "Visible",
-    displaySize: "standard",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T09:25:00Z"),
-    updatedAt: new Date("2026-06-11T09:25:00Z")
-  },
-  {
-    id: "mock-5",
-    name: "Ceramic mug",
-    slug: createSlug("Ceramic mug"),
-    imageOriginalUrl: createMockImageDataUrl("Mug", "#b48b6e", 1100, 1100),
-    imageProcessedUrl: createMockImageDataUrl("Mug", "#b48b6e", 1100, 1100),
-    sourceUrl: null,
-    editorialTag: "Home",
-    price: "28",
-    currency: "USD",
-    note: "Morning coffee on the west side of the table",
-    status: "Visible",
-    displaySize: "standard",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T09:10:00Z"),
-    updatedAt: new Date("2026-06-11T09:10:00Z")
-  },
-  {
-    id: "mock-6",
-    name: "Paperback novel",
-    slug: createSlug("Paperback novel"),
-    imageOriginalUrl: createMockImageDataUrl("Book", "#8b5c83", 1400, 900),
-    imageProcessedUrl: createMockImageDataUrl("Book", "#8b5c83", 1400, 900),
-    sourceUrl: null,
-    editorialTag: "Read",
-    price: null,
-    currency: null,
-    note: "Something to keep by the bed",
-    status: "Visible",
-    displaySize: "wide",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T08:55:00Z"),
-    updatedAt: new Date("2026-06-11T08:55:00Z")
-  },
-  {
-    id: "mock-7",
-    name: "Bicycle pump",
-    slug: createSlug("Bicycle pump"),
-    imageOriginalUrl: createMockImageDataUrl("Pump", "#61704f", 900, 1400),
-    imageProcessedUrl: createMockImageDataUrl("Pump", "#61704f", 900, 1400),
-    sourceUrl: "https://example.com/bicycle-pump",
-    editorialTag: "Move",
-    price: "42",
-    currency: "USD",
-    note: null,
-    status: "Visible",
-    displaySize: "tall",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T08:40:00Z"),
-    updatedAt: new Date("2026-06-11T08:40:00Z")
-  },
-  {
-    id: "mock-8",
-    name: "Hand cream",
-    slug: createSlug("Hand cream"),
-    imageOriginalUrl: createMockImageDataUrl("Cream", "#a16f7b", 1200, 1200),
-    imageProcessedUrl: createMockImageDataUrl("Cream", "#a16f7b", 1200, 1200),
-    sourceUrl: null,
-    editorialTag: "Care",
-    price: "19",
-    currency: "USD",
-    note: "Small daily ritual, useful and unglamorous",
-    status: "Visible",
-    displaySize: "feature",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T08:20:00Z"),
-    updatedAt: new Date("2026-06-11T08:20:00Z")
-  },
-  {
-    id: "mock-9",
-    name: "Brass ruler",
-    slug: createSlug("Brass ruler"),
-    imageOriginalUrl: createMockImageDataUrl("Ruler", "#9d8a55", 1200, 1200),
-    imageProcessedUrl: createMockImageDataUrl("Ruler", "#9d8a55", 1200, 1200),
-    sourceUrl: "https://example.com/brass-ruler",
-    editorialTag: "Collect",
-    price: "36",
-    currency: "USD",
-    note: null,
-    status: "Visible",
-    displaySize: "standard",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T08:00:00Z"),
-    updatedAt: new Date("2026-06-11T08:00:00Z")
-  },
-  {
-    id: "mock-10",
-    name: "Folding stool",
-    slug: createSlug("Folding stool"),
-    imageOriginalUrl: createMockImageDataUrl("Stool", "#6f7d8a", 1100, 1100),
-    imageProcessedUrl: createMockImageDataUrl("Stool", "#6f7d8a", 1100, 1100),
-    sourceUrl: null,
-    editorialTag: "Home",
-    price: null,
-    currency: null,
-    note: "For extra seating when people stay late",
-    status: "Visible",
-    displaySize: "wide",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T07:45:00Z"),
-    updatedAt: new Date("2026-06-11T07:45:00Z")
-  },
-  {
-    id: "mock-11",
-    name: "Blueprint notebook",
-    slug: createSlug("Blueprint notebook"),
-    imageOriginalUrl: null,
-    imageProcessedUrl: null,
-    sourceUrl: null,
-    editorialTag: "Make",
-    price: null,
-    currency: null,
-    note: "Draft only, keep private until there is a better image",
-    status: "Draft",
-    displaySize: "standard",
-    sourceImageProvider: null,
-    createdAt: new Date("2026-06-11T07:20:00Z"),
-    updatedAt: new Date("2026-06-11T07:20:00Z")
-  },
-  {
-    id: "mock-12",
-    name: "Glass vase",
-    slug: createSlug("Glass vase"),
-    imageOriginalUrl: createMockImageDataUrl("Vase", "#86a8a1", 900, 1400),
-    imageProcessedUrl: null,
-    sourceUrl: null,
-    editorialTag: "Home",
-    price: "64",
-    currency: "USD",
-    note: "Needs a cleaner cutout before publishing",
-    status: "Draft",
-    displaySize: "tall",
-    sourceImageProvider: "mock",
-    createdAt: new Date("2026-06-11T07:10:00Z"),
-    updatedAt: new Date("2026-06-11T07:10:00Z")
-  }
-];
+function toStudioObject(row: MockRow): StudioWishlistObject {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    imageOriginalUrl: row.imageOriginalUrl,
+    imageProcessedUrl: row.imageProcessedUrl,
+    sourceUrl: row.sourceUrl,
+    editorialTag: row.editorialTag,
+    price: row.price,
+    currency: row.currency,
+    note: row.note,
+    status: row.status,
+    displaySize: row.displaySize,
+    sourceImageProvider: row.sourceImageProvider,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt
+  };
+}
 
-export function createMockObjectRepository(): ObjectRepository {
-  return new InMemoryObjectRepository(mockWishlistObjects);
+function toPublicObject(object: StudioWishlistObject): PublicWishlistObject {
+  return publicWishlistObjectSchema.parse({ ...object, status: "Visible" });
+}
+
+function normalizeRecord(record: CreateMockObjectRecord): MockRow {
+  const now = new Date();
+  const createdAt = record.createdAt ?? now;
+  const updatedAt = record.updatedAt ?? createdAt;
+
+  return {
+    id: crypto.randomUUID(),
+    name: record.name,
+    slug: record.slug ?? createSlug(record.name),
+    imageOriginalUrl: record.imageOriginalUrl,
+    imageProcessedUrl: record.imageProcessedUrl,
+    sourceUrl: record.sourceUrl ?? null,
+    editorialTag: record.editorialTag,
+    price: record.price ?? null,
+    currency: record.currency ?? null,
+    note: record.note ?? null,
+    status: record.status,
+    displaySize: record.displaySize ?? chooseDisplaySize({ width: 1200, height: 1200, index: 0 }),
+    sourceImageProvider: record.sourceImageProvider ?? null,
+    createdAt,
+    updatedAt
+  };
+}
+
+class InMemoryMockObjectRepository implements MockObjectRepository {
+  private records: MockRow[];
+
+  constructor(initialRecords: MockRow[] = mockWishlistObjects as unknown as MockRow[]) {
+    this.records = initialRecords.map(cloneRow);
+  }
+
+  async listPublic(options: { editorialTag?: EditorialTag } = {}) {
+    return this.records
+      .filter((row) => row.status === "Visible" && Boolean(row.imageProcessedUrl))
+      .filter((row) => (options.editorialTag ? row.editorialTag === options.editorialTag : true))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map((row) => toPublicObject(toStudioObject(row)));
+  }
+
+  async listStudio() {
+    return [...this.records].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).map(toStudioObject);
+  }
+
+  async createForStudio(record: CreateMockObjectRecord) {
+    const row = normalizeRecord(record);
+    this.records.unshift(row);
+    return toStudioObject(row);
+  }
+
+  async updateObject(id: string, changes: Partial<StudioWishlistObject>) {
+    const index = this.records.findIndex((row) => row.id === id);
+    if (index < 0) {
+      throw new Error("Object not found");
+    }
+
+    const updated: MockRow = {
+      ...this.records[index],
+      ...changes,
+      imageOriginalUrl: changes.imageOriginalUrl ?? this.records[index].imageOriginalUrl,
+      imageProcessedUrl: changes.imageProcessedUrl ?? this.records[index].imageProcessedUrl,
+      sourceUrl: changes.sourceUrl ?? this.records[index].sourceUrl,
+      price: changes.price ?? this.records[index].price,
+      currency: changes.currency ?? this.records[index].currency,
+      note: changes.note ?? this.records[index].note,
+      sourceImageProvider: changes.sourceImageProvider ?? this.records[index].sourceImageProvider,
+      updatedAt: new Date()
+    };
+
+    this.records[index] = updated;
+    return toStudioObject(updated);
+  }
+
+  async archiveObject(id: string) {
+    return this.updateObject(id, { status: "Archived" });
+  }
+
+  async seedIfEmpty() {
+    if (this.records.length === 0) {
+      this.records = (mockWishlistObjects as unknown as MockRow[]).map(cloneRow);
+    }
+  }
+}
+
+export function createMockObjectRepository(): MockObjectRepository {
+  return new InMemoryMockObjectRepository();
 }

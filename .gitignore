@@ -1,1 +1,9 @@
 .worktrees/
+node_modules/
+.next/
+coverage/
+playwright-report/
+drizzle/
+test-results/
+tsconfig.tsbuildinfo
+.env.local
