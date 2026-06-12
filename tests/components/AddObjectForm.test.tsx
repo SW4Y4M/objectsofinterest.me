@@ -26,6 +26,12 @@ describe("AddObjectForm", () => {
     expect(screen.getByLabelText("Note or provenance")).toBeInTheDocument();
   });
 
+  it("uses multipart encoding for the expanded upload form", () => {
+    render(<AddObjectForm defaultOpen={true} />);
+
+    expect(screen.getByTestId("add-object-form")).toHaveAttribute("enctype", "multipart/form-data");
+  });
+
   it("renders a synthetic name field error inline", () => {
     const errorState: StudioActionState = {
       status: "error",

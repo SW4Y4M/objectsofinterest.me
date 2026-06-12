@@ -114,7 +114,13 @@ export function AddObjectForm({ defaultOpen }: { defaultOpen: boolean }) {
   }
 
   return (
-    <form action={formAction} data-state="open" data-testid="add-object-form" className="grid gap-4 border-y border-line py-6">
+    <form
+      action={formAction}
+      encType="multipart/form-data"
+      data-state="open"
+      data-testid="add-object-form"
+      className="grid gap-4 border-y border-line py-6"
+    >
       <AddObjectFields state={state} />
       <StudioFeedback state={state} id="add-object-feedback" />
       <button type="submit" disabled={isPending} className="w-fit bg-ink px-5 py-2 text-wall">
