@@ -1,9 +1,15 @@
 import { addObject } from "@/app/studio/actions";
 import { EDITORIAL_TAGS } from "@/lib/domain/wishlistObject";
 
-export function AddObjectForm() {
+export function AddObjectForm({ defaultOpen = true }: { defaultOpen?: boolean }) {
   return (
-    <form action={addObject} encType="multipart/form-data" className="grid gap-4 border-y border-line py-6">
+    <form
+      action={addObject}
+      encType="multipart/form-data"
+      data-state={defaultOpen ? "open" : "collapsed"}
+      data-testid="add-object-form"
+      className="grid gap-4 border-y border-line py-6"
+    >
       <div className="grid gap-2">
         <label htmlFor="name" className="text-sm text-muted">
           Object name
