@@ -24,11 +24,12 @@ describe("StudioToolbar", () => {
   });
 
   it("starts the add form open for an empty studio and collapsed when objects exist", () => {
-    const { rerender } = render(<StudioToolbar objects={[]} mode="live" />);
+    const { unmount } = render(<StudioToolbar objects={[]} mode="live" />);
 
     expect(screen.getByTestId("add-object-form")).toHaveAttribute("data-state", "open");
 
-    rerender(<StudioToolbar objects={[mockWishlistObjects[0]]} mode="live" />);
+    unmount();
+    render(<StudioToolbar objects={[mockWishlistObjects[0]]} mode="live" />);
 
     expect(screen.getByTestId("add-object-form")).toHaveAttribute("data-state", "collapsed");
   });
