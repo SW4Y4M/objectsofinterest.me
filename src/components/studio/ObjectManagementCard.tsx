@@ -99,7 +99,9 @@ export function ObjectManagementCard({
       {isExpanded ? (
         <div className="border-t border-line p-3">
           {showDirtySwitchWarning ? (
-            <p className="pb-3 text-sm text-muted">Unsaved local edits will be discarded when you switch objects.</p>
+            <p className="pb-3 text-sm text-muted">
+              Unsaved local edits will be discarded when you switch objects. Switching is allowed.
+            </p>
           ) : null}
           <div ref={replacementGroupRef} tabIndex={-1} aria-labelledby={replacementHeadingId} className="mb-3 outline-none">
             <h4 id={replacementHeadingId} className="text-sm font-normal text-muted">

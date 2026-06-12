@@ -55,7 +55,11 @@ describe("ObjectManagementList", () => {
     await user.click(screen.getByRole("button", { name: "Edit Aluminum drafting pen" }));
 
     const secondCard = screen.getByRole("article", { name: "Aluminum drafting pen" });
-    expect(within(secondCard).getByText("Unsaved local edits will be discarded when you switch objects.")).toBeInTheDocument();
+    expect(
+      within(secondCard).getByText(
+        "Unsaved local edits will be discarded when you switch objects. Switching is allowed.",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Name for Aluminum drafting pen")).toBeInTheDocument();
   });
 });
