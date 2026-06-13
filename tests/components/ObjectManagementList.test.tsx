@@ -57,6 +57,17 @@ describe("ObjectManagementList", () => {
     }
   });
 
+  it("makes archive confirmation controls distinguishable by object name", async () => {
+    const user = userEvent.setup();
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Archive Brass oil burner" }));
+    await user.click(screen.getByRole("button", { name: "Archive Aluminum drafting pen" }));
+
+    expect(screen.getByRole("button", { name: "Confirm archive Brass oil burner" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirm archive Aluminum drafting pen" })).toBeInTheDocument();
+  });
+
   it("closes object A when opening object B", async () => {
     const user = userEvent.setup();
     render(<ObjectManagementList objects={objects} />);

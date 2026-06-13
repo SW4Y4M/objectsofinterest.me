@@ -20,12 +20,18 @@ export function ArchiveObjectControl({ object }: { object: StudioWishlistObject 
       {isConfirming ? (
         <form action={formAction} className="flex flex-wrap gap-2">
           <input type="hidden" name="id" value={object.id} />
-          <button type="submit" disabled={isPending} className="border border-ink px-3 py-2 text-ink">
+          <button
+            type="submit"
+            disabled={isPending}
+            aria-label={`Confirm archive ${object.name}`}
+            className="border border-ink px-3 py-2 text-ink"
+          >
             Confirm archive
           </button>
           <button
             type="button"
             disabled={isPending}
+            aria-label={`Cancel archive ${object.name}`}
             onClick={() => setIsConfirming(false)}
             className="border border-line px-3 py-2 text-muted"
           >

@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StudioActionState } from "@/app/studio/actionState";
+import { archiveObjectWithState } from "@/app/studio/actions";
 import { ArchiveObjectControl } from "@/components/studio/ArchiveObjectControl";
 import { mockWishlistObjects } from "@/lib/mock/mockObjects";
 
@@ -42,13 +43,22 @@ describe("ArchiveObjectControl", () => {
     expect(formActionSpy).not.toHaveBeenCalled();
   });
 
+  it("initializes action state with the archive action", () => {
+    render(<ArchiveObjectControl object={visibleObject} />);
+
+    expect(useActionStateMock).toHaveBeenCalledWith(
+      archiveObjectWithState,
+      expect.objectContaining({ status: "idle" })
+    );
+  });
+
   it("shows confirm archive after the first archive click", async () => {
     const user = userEvent.setup();
     render(<ArchiveObjectControl object={visibleObject} />);
 
     await user.click(screen.getByRole("button", { name: "Archive Brass oil burner" }));
 
-    expect(screen.getByRole("button", { name: "Confirm archive" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirm archive Brass oil burner" })).toBeInTheDocument();
   });
 
   it("hides confirmation when cancel is clicked", async () => {
@@ -56,9 +66,26 @@ describe("ArchiveObjectControl", () => {
     render(<ArchiveObjectControl object={visibleObject} />);
 
     await user.click(screen.getByRole("button", { name: "Archive Brass oil burner" }));
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "Cancel archive Brass oil burner" }));
 
-    expect(screen.queryByRole("button", { name: "Confirm archive" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Confirm archive Brass oil burner" })).not.toBeInTheDocument();
+  });
+
+  it("submits the visible object id through the form action", async () => {
+    const user = userEvent.setup();
+    render(<ArchiveObjectControl object={visibleObject} />);
+
+    await user.click(screen.getByRole("button", { name: "Archive Brass oil burner" }));
+    const confirmButton = screen.getByRole("button", { name: "Confirm archive Brass oil burner" });
+    const form = confirmButton.closest("form");
+
+    expect(form).not.toBeNull();
+    fireEvent.submit(form!);
+
+    expect(formActionSpy).toHaveBeenCalledTimes(1);
+    const submittedFormData = formActionSpy.mock.calls[0][0];
+    expect(submittedFormData).toBeInstanceOf(FormData);
+    expect(submittedFormData.get("id")).toBe(visibleObject.id);
   });
 
   it("does not render destructive controls for archived objects", () => {
