@@ -14,7 +14,7 @@ export function ObjectImageReplacementForm({ object }: { object: StudioWishlistO
   const imageUrl = object.imageProcessedUrl ?? object.imageOriginalUrl;
 
   return (
-    <form action={formAction} aria-describedby={feedbackId} className="grid gap-3 text-sm">
+    <form action={formAction} aria-describedby={feedbackId} className="grid gap-3 text-sm" encType="multipart/form-data">
       <input type="hidden" name="id" value={object.id} />
       <input type="hidden" name="name" value={object.name} />
       <fieldset className="grid gap-3">

@@ -84,7 +84,9 @@ describe("ObjectManagementList", () => {
     await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
 
     expect(screen.getByLabelText("Replacement image URL")).toBeInTheDocument();
-    expect(screen.getByLabelText("Replacement image upload")).toBeInTheDocument();
+    const upload = screen.getByLabelText("Replacement image upload");
+    expect(upload).toBeInTheDocument();
+    expect(upload.closest("form")).toHaveAttribute("enctype", "multipart/form-data");
     expect(screen.getByRole("button", { name: "Replace image" })).toBeInTheDocument();
   });
 
