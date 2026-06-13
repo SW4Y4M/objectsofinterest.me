@@ -49,6 +49,14 @@ describe("ObjectManagementList", () => {
     }
   });
 
+  it("makes archive controls distinguishable by object name", () => {
+    render(<ObjectManagementList objects={objects} />);
+
+    for (const object of objects) {
+      expect(screen.getByRole("button", { name: `Archive ${object.name}` })).toBeInTheDocument();
+    }
+  });
+
   it("closes object A when opening object B", async () => {
     const user = userEvent.setup();
     render(<ObjectManagementList objects={objects} />);

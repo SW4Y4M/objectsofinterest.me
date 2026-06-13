@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { archiveObject } from "@/app/studio/actions";
 import type { StudioWishlistObject } from "@/lib/domain/wishlistObject";
+import { ArchiveObjectControl } from "./ArchiveObjectControl";
 import { ImageProcessingState } from "./ImageProcessingState";
 
 export type ObjectManagementExpansionMode = "edit" | "replace";
@@ -85,14 +85,7 @@ export function ObjectManagementCard({
           <button type="button" onClick={onReplaceImage} className="border border-line px-3 py-2">
             {`Replace image ${object.name}`}
           </button>
-          {object.status !== "Archived" ? (
-            <form action={archiveObject}>
-              <input type="hidden" name="id" value={object.id} />
-              <button type="submit" className="border border-line px-3 py-2 text-muted">
-                {`Archive ${object.name}`}
-              </button>
-            </form>
-          ) : null}
+          <ArchiveObjectControl object={object} />
         </div>
       </div>
       {isExpanded ? (
