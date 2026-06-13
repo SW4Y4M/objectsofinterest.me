@@ -153,6 +153,47 @@ describe("ObjectManagementList", () => {
     ).toBeInTheDocument();
   });
 
+  it("clears dirty state for each distinct successful metadata save", async () => {
+    const user = userEvent.setup();
+    let currentState: StudioActionState = {
+      status: "idle",
+      message: "",
+      fieldErrors: {}
+    };
+    const firstSavedState: StudioActionState = {
+      status: "success",
+      message: "Changes saved.",
+      fieldErrors: {}
+    };
+    const secondSavedState: StudioActionState = {
+      status: "success",
+      message: "Changes saved again.",
+      fieldErrors: {}
+    };
+    useActionStateMock.mockImplementation((action) => [currentState, action, false]);
+    const { rerender } = render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Edit Brass oil burner" }));
+    await user.type(screen.getByLabelText("Object name"), " edited");
+
+    currentState = firstSavedState;
+    rerender(<ObjectManagementList objects={objects} />);
+
+    await user.type(screen.getByLabelText("Object name"), " again");
+
+    currentState = secondSavedState;
+    rerender(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Edit Aluminum drafting pen" }));
+
+    const secondCard = screen.getByRole("article", { name: "Aluminum drafting pen" });
+    expect(
+      within(secondCard).queryByText(
+        "Unsaved local edits will be discarded when you switch objects. Switching is allowed.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("preserves dirty state across mode changes on the same object", async () => {
     const user = userEvent.setup();
     render(<ObjectManagementList objects={objects} />);

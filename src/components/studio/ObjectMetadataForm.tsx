@@ -15,18 +15,16 @@ type ObjectMetadataFormProps = {
 
 export function ObjectMetadataForm({ object, onDirtyChange }: ObjectMetadataFormProps) {
   const [state, formAction, isPending] = useActionState(editObjectWithState, emptyStudioActionState);
-  const previousStatusRef = useRef(state.status);
+  const previousStateRef = useRef(state);
   const feedbackId = `metadata-feedback-${object.id}`;
 
   useEffect(() => {
-    const previousStatus = previousStatusRef.current;
-
-    if (previousStatus !== "success" && state.status === "success") {
+    if (previousStateRef.current !== state && state.status === "success") {
       onDirtyChange(false);
     }
 
-    previousStatusRef.current = state.status;
-  }, [onDirtyChange, state.status]);
+    previousStateRef.current = state;
+  }, [onDirtyChange, state]);
 
   return (
     <form
