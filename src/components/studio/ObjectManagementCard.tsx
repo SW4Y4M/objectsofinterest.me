@@ -36,7 +36,6 @@ export function ObjectManagementCard({
 }: ObjectManagementCardProps) {
   const replacementGroupRef = useRef<HTMLDivElement>(null);
   const thumbnailUrl = object.imageProcessedUrl ?? object.imageOriginalUrl;
-  const replacementHeadingId = `studio-object-${object.id}-replace-image`;
 
   useEffect(() => {
     if (isExpanded && expansionMode === "replace") {
@@ -103,12 +102,9 @@ export function ObjectManagementCard({
               Unsaved local edits will be discarded when you switch objects. Switching is allowed.
             </p>
           ) : null}
-          <div ref={replacementGroupRef} tabIndex={-1} aria-labelledby={replacementHeadingId} className="mb-3 outline-none">
-            <h4 id={replacementHeadingId} className="text-sm font-normal text-muted">
-              Replace image
-            </h4>
+          <div ref={replacementGroupRef} tabIndex={-1} className="outline-none">
+            {children}
           </div>
-          {children}
         </div>
       ) : null}
     </article>

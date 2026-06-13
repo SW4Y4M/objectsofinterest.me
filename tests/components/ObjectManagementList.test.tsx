@@ -83,9 +83,60 @@ describe("ObjectManagementList", () => {
 
     await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
 
-    expect(screen.getByLabelText("Replacement image URL for Brass oil burner")).toBeInTheDocument();
-    expect(screen.getByLabelText("Replacement image file for Brass oil burner")).toBeInTheDocument();
+    expect(screen.getByLabelText("Replacement image URL")).toBeInTheDocument();
+    expect(screen.getByLabelText("Replacement image upload")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Replace image" })).toBeInTheDocument();
+  });
+
+  it("keeps replacement controls absent from compact cards", () => {
+    render(<ObjectManagementList objects={objects} />);
+
+    expect(screen.queryByRole("group", { name: "Replace image" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Replacement image URL")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Replacement image upload")).not.toBeInTheDocument();
+  });
+
+  it("renders replacement controls inside the expanded object", async () => {
+    const user = userEvent.setup();
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
+
+    const firstCard = screen.getByRole("article", { name: "Brass oil burner" });
+    const secondCard = screen.getByRole("article", { name: "Aluminum drafting pen" });
+    expect(within(firstCard).getByRole("group", { name: "Replace image" })).toBeInTheDocument();
+    expect(within(firstCard).getByLabelText("Replacement image URL")).toBeInTheDocument();
+    expect(within(firstCard).getByLabelText("Replacement image upload")).toBeInTheDocument();
+    expect(within(secondCard).queryByRole("group", { name: "Replace image" })).not.toBeInTheDocument();
+  });
+
+  it("renders the current image preview inside the expanded object", async () => {
+    const user = userEvent.setup();
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
+
+    const firstCard = screen.getByRole("article", { name: "Brass oil burner" });
+    expect(within(firstCard).getByRole("img", { name: "Brass oil burner current image" })).toHaveAttribute(
+      "src",
+      objects[0].imageProcessedUrl ?? objects[0].imageOriginalUrl
+    );
+  });
+
+  it("renders image replacement feedback for the active object", async () => {
+    const user = userEvent.setup();
+    const savedState: StudioActionState = {
+      status: "success",
+      message: "Image replacement saved.",
+      fieldErrors: {}
+    };
+    useActionStateMock.mockImplementation((action) => [savedState, action, false]);
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
+
+    const firstCard = screen.getByRole("article", { name: "Brass oil burner" });
+    expect(within(firstCard).getByRole("status")).toHaveTextContent("Image replacement saved.");
   });
 
   it("only exposes Save changes for the active object", async () => {
