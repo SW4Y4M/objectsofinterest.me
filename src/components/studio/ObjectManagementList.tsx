@@ -17,11 +17,14 @@ export function ObjectManagementList({ objects }: { objects: StudioWishlistObjec
 
   function expandObject(objectId: string, mode: ObjectManagementExpansionMode) {
     const switchingObjects = expandedObjectId !== null && expandedObjectId !== objectId;
+    const showDirtySwitchWarning = switchingObjects && dirtyObjectId === expandedObjectId;
 
-    setWarningObjectId(switchingObjects && dirtyObjectId === expandedObjectId ? objectId : null);
+    setWarningObjectId(showDirtySwitchWarning ? objectId : null);
     setExpandedObjectId(objectId);
     setExpansionMode(mode);
-    setDirtyObjectId(null);
+    if (switchingObjects) {
+      setDirtyObjectId(null);
+    }
   }
 
   return (

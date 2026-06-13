@@ -62,4 +62,21 @@ describe("ObjectManagementList", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Name for Aluminum drafting pen")).toBeInTheDocument();
   });
+
+  it("preserves dirty state across mode changes on the same object", async () => {
+    const user = userEvent.setup();
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Edit Brass oil burner" }));
+    await user.type(screen.getByLabelText("Name for Brass oil burner"), " edited");
+    await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
+    await user.click(screen.getByRole("button", { name: "Edit Aluminum drafting pen" }));
+
+    const secondCard = screen.getByRole("article", { name: "Aluminum drafting pen" });
+    expect(
+      within(secondCard).getByText(
+        "Unsaved local edits will be discarded when you switch objects. Switching is allowed.",
+      ),
+    ).toBeInTheDocument();
+  });
 });
