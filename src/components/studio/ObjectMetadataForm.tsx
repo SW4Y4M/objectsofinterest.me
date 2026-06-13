@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { emptyStudioActionState } from "@/app/studio/actionState";
 import { editObjectWithState } from "@/app/studio/actions";
 import { EDITORIAL_TAGS, type StudioWishlistObject } from "@/lib/domain/wishlistObject";
@@ -15,12 +15,17 @@ type ObjectMetadataFormProps = {
 
 export function ObjectMetadataForm({ object, onDirtyChange }: ObjectMetadataFormProps) {
   const [state, formAction, isPending] = useActionState(editObjectWithState, emptyStudioActionState);
+  const previousStatusRef = useRef(state.status);
   const feedbackId = `metadata-feedback-${object.id}`;
 
   useEffect(() => {
-    if (state.status === "success") {
+    const previousStatus = previousStatusRef.current;
+
+    if (previousStatus !== "success" && state.status === "success") {
       onDirtyChange(false);
     }
+
+    previousStatusRef.current = state.status;
   }, [onDirtyChange, state.status]);
 
   return (

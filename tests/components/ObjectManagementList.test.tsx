@@ -131,6 +131,28 @@ describe("ObjectManagementList", () => {
     expect(screen.getByLabelText("Object name")).toHaveValue("Aluminum drafting pen");
   });
 
+  it("preserves dirty state when a persisted success state rerenders after editing", async () => {
+    const user = userEvent.setup();
+    const savedState: StudioActionState = {
+      status: "success",
+      message: "Changes saved.",
+      fieldErrors: {}
+    };
+    useActionStateMock.mockImplementation((action) => [savedState, action, false]);
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Edit Brass oil burner" }));
+    await user.type(screen.getByLabelText("Object name"), " edited");
+    await user.click(screen.getByRole("button", { name: "Edit Aluminum drafting pen" }));
+
+    const secondCard = screen.getByRole("article", { name: "Aluminum drafting pen" });
+    expect(
+      within(secondCard).getByText(
+        "Unsaved local edits will be discarded when you switch objects. Switching is allowed.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("preserves dirty state across mode changes on the same object", async () => {
     const user = userEvent.setup();
     render(<ObjectManagementList objects={objects} />);
