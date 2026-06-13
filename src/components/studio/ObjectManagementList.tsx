@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { StudioWishlistObject } from "@/lib/domain/wishlistObject";
-import { EditObjectForm } from "./EditObjectForm";
 import { ObjectManagementCard, type ObjectManagementExpansionMode } from "./ObjectManagementCard";
+import { ObjectMetadataForm } from "./ObjectMetadataForm";
 
 export function ObjectManagementList({ objects }: { objects: StudioWishlistObject[] }) {
   const [expandedObjectId, setExpandedObjectId] = useState<string | null>(null);
@@ -40,9 +40,10 @@ export function ObjectManagementList({ objects }: { objects: StudioWishlistObjec
           onReplaceImage={() => expandObject(object.id, "replace")}
         >
           {expandedObjectId === object.id ? (
-            <div onChange={() => setDirtyObjectId(object.id)}>
-              <EditObjectForm object={object} />
-            </div>
+            <ObjectMetadataForm
+              object={object}
+              onDirtyChange={(isDirty) => setDirtyObjectId(isDirty ? object.id : null)}
+            />
           ) : null}
         </ObjectManagementCard>
       ))}
