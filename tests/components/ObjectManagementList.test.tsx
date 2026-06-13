@@ -77,6 +77,17 @@ describe("ObjectManagementList", () => {
     expect(within(firstCard).getByLabelText("Note or provenance")).toHaveValue(objects[0].note);
   });
 
+  it("renders replacement controls in replace mode", async () => {
+    const user = userEvent.setup();
+    render(<ObjectManagementList objects={objects} />);
+
+    await user.click(screen.getByRole("button", { name: "Replace image Brass oil burner" }));
+
+    expect(screen.getByLabelText("Replacement image URL for Brass oil burner")).toBeInTheDocument();
+    expect(screen.getByLabelText("Replacement image file for Brass oil burner")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Replace image" })).toBeInTheDocument();
+  });
+
   it("only exposes Save changes for the active object", async () => {
     const user = userEvent.setup();
     render(<ObjectManagementList objects={objects} />);

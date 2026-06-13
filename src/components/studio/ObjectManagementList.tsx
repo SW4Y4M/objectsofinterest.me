@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { StudioWishlistObject } from "@/lib/domain/wishlistObject";
+import { EditObjectForm } from "./EditObjectForm";
 import { ObjectManagementCard, type ObjectManagementExpansionMode } from "./ObjectManagementCard";
 import { ObjectMetadataForm } from "./ObjectMetadataForm";
 
@@ -39,11 +40,14 @@ export function ObjectManagementList({ objects }: { objects: StudioWishlistObjec
           onEdit={() => expandObject(object.id, "edit")}
           onReplaceImage={() => expandObject(object.id, "replace")}
         >
-          {expandedObjectId === object.id ? (
+          {expandedObjectId === object.id && expansionMode === "edit" ? (
             <ObjectMetadataForm
               object={object}
               onDirtyChange={(isDirty) => setDirtyObjectId(isDirty ? object.id : null)}
             />
+          ) : null}
+          {expandedObjectId === object.id && expansionMode === "replace" ? (
+            <EditObjectForm object={object} />
           ) : null}
         </ObjectManagementCard>
       ))}
