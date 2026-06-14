@@ -1,19 +1,19 @@
-# Wishlist Product Spec
+# Objects of Interest Product Spec
 
-Status: Draft v0.3
-Product: Wishlist
+Status: Draft v0.4
+Product: Objects of Interest
 Audience: One public profile owner, public visitors
 Working public identity: @swayam's Objects of Interest
 
 ## Product Summary
 
-Wishlist is a polished public profile for objects someone wants. The owner can add an object by name, with an optional image. If no image is provided, Wishlist searches for a suitable product image, removes the background, and places the clean object cutout onto a minimal white wall.
+Objects of Interest is a polished public profile for personal taste: a self-portrait made of objects someone notices, wants, researches, or aspires to own. The owner can add an object from a name, URL, screenshot, image, or product reference. The product should give back more than the owner put in by turning that rough input into a clean object cutout, a title guess, a source, optional price context, a suggested tag, and a beautiful placement on the wall.
 
-The site should feel minimal, curated, and personal. It is not a spreadsheet of links or a utilitarian gift registry. The main experience is the object wall: a white, gallery-like surface where cutout objects appear arranged by time, like a growing stack of taste.
+The site should feel minimal, curated, and personal. It is not a spreadsheet of links, a utilitarian gift registry, or a generic shopping wishlist. The main experience is the object wall: a white, gallery-like surface where cutout objects appear arranged by time, like a growing stack of taste.
 
 ## Product Positioning
 
-Wishlist is a public object moodboard for one person.
+Objects of Interest is a public object moodboard for one person.
 
 The public identity should feel profile-like but editorial. The working title is `@swayam's Objects of Interest`: personal enough to belong to one person, but restrained enough to fit the minimal gallery tone.
 
@@ -23,6 +23,7 @@ It sits between:
 - A public profile
 - A minimal object gallery
 - A lightweight gift inspiration page
+- A taste archive
 
 It is not, for now:
 
@@ -34,39 +35,93 @@ It is not, for now:
 
 ## Core User Story
 
-As the wishlist owner, I want to enter the name of an object and have the site find a clean image for me, so I can build a beautiful public wall of things I want without manually preparing assets.
+As the wall owner, I want to add a messy object reference and have the site transform it into a clean, beautiful object on my wall, so capturing taste feels fast, pleasurable, and more rewarding than saving a link.
 
-As a public visitor, I want to browse the wishlist like a boutique gallery, so I can understand the person's taste and explore objects without needing to sign in or interact.
+As a public visitor, I want to browse the wall like a boutique gallery, so I can understand the person's taste and explore objects without needing to sign in or interact.
+
+As an interested visitor, I want to join a waitlist, so I can be notified when I can create my own wall.
+
+## Core Transformation
+
+The product's first AHA moment is transformation.
+
+The user gives the system something rough:
+
+- A messy product URL
+- A screenshot
+- A product name
+- An uploaded image
+- A pasted image URL
+
+The system gives back something more refined:
+
+- A clean object cutout
+- A plausible title
+- A source reference when available
+- Optional price context when available
+- A suggested editorial tag
+- A beautiful placement on the public wall
+
+This should feel less like bookmarking and more like dropping a found object onto a personal gallery table. The owner should feel: `I found a thing, and now it belongs to my world.`
+
+The product's later AHA moment is pattern recognition. After several saves, the wall should begin to reflect the owner's taste back to them: repeated materials, categories, moods, use cases, and aspirations.
 
 ## Guiding Principles
 
 - Image-first: the object wall is the experience.
 - Polished over broad: fewer features, better presentation.
-- Frictionless adding: entering an object name should usually be enough.
+- Frictionless capture: pasting a link, name, screenshot, or image should usually be enough.
+- Transformation over storage: the system should turn rough input into a wall-ready object.
 - Browse-only public mode: visitors can explore but not modify, reserve, or claim.
 - Curated taste: every object should look like it belongs in a designed profile.
+- Calm desire: the product should help users notice, save, and reflect before buying, not pressure them into immediate purchase.
+
+## EOD MVP Launch Scope
+
+The EOD MVP can be owner-only. It must prove the public wall, the capture/transformation promise, and the waitlist.
+
+Required for launch:
+
+- One public wall for `@swayam's Objects of Interest`.
+- Real object images on the public wall.
+- Owner-only Studio for adding and correcting objects.
+- Add object from at least object name, image URL, or image upload.
+- A processed or clean object image shown on the wall.
+- Basic title, tag, source, price, and note metadata.
+- A public waitlist form for visitors who want their own wall.
+
+Acceptable launch compromises:
+
+- Studio can remain functional and owner-focused rather than fully polished.
+- Automatic title, source, price, and tag inference can be partial or provider-limited.
+- Screenshot capture can be deferred if URL/name/image capture proves the transformation.
+- Multi-user account creation is deferred behind the waitlist.
 
 ## MVP Scope
 
 ### In Scope
 
-- One wishlist profile.
+- One object wall profile.
 - Public browse-only page.
 - Hidden owner Studio mode for object entry and drafts.
 - Add object by name.
+- Add object by URL, image URL, or upload when available.
 - Optional manual image upload or image URL.
 - Automatic image search when no image is supplied.
 - Background removal for fetched or uploaded product images.
+- Title guess, source capture, optional price context, and suggested editorial tag when available.
 - Minimal white-wall object views: strict grid and expressive masonry.
 - Hover/focus/tap object annotation state.
 - Filters for browsing.
 - Basic object metadata.
+- Public waitlist signup.
 
 ### Out of Scope
 
 - Multiple users/accounts.
 - Multiple wishlists.
 - Full admin dashboard.
+- Full Studio visual redesign or Figma-level component polish.
 - Visitor comments, likes, or reactions.
 - Gift claiming or reservations.
 - Checkout or payments.
@@ -109,7 +164,11 @@ Revealed on hover/focus/tap:
 
 The owner can add an object with minimal effort from a hidden Studio route, such as `/studio`. The Studio should feel like a private version of the same wall, not a heavy admin dashboard.
 
-Required fields:
+Primary capture input:
+
+- One flexible input that can accept a product name, product URL, image URL, or uploaded image.
+
+Required normalized fields:
 
 - Object name
 - Editorial tag
@@ -125,13 +184,17 @@ Optional fields:
 Image handling:
 
 1. If the owner uploads or pastes an image, use that image.
-2. If no image is provided, search for a relevant product image using the object name.
-3. Automatically pick the best candidate image.
-4. Always remove the image background, whether the image was searched, uploaded, or pasted.
-5. Store and display the processed object image in the wall.
-6. Allow the owner to manually override the image by uploading or pasting a replacement.
-7. If processing succeeds with a usable image, publish the object as `Visible` immediately.
-8. If processing fails or returns a low-quality result, save the object privately as `Draft`.
+2. If the owner pastes a URL, attempt to extract or infer title, source, image, and price.
+3. If no image is provided, search for a relevant product image using the object name.
+4. Automatically pick the best candidate image.
+5. Suggest an editorial tag when enough context exists.
+6. Always remove the image background, whether the image was searched, uploaded, or pasted.
+7. Store and display the processed object image in the wall.
+8. Allow the owner to manually override the image by uploading or pasting a replacement.
+9. If processing succeeds with a usable image, publish the object as `Visible` immediately.
+10. If processing fails or returns a low-quality result, save the object privately as `Draft`.
+
+The capture flow should not force the owner to complete every metadata field up front. The first action is capture; curation can happen afterward.
 
 ### 3. Object Annotation State
 
@@ -183,9 +246,27 @@ Filter presentation:
 - Do not show counts in v1.
 - Do not use dropdowns, side panels, or a visible `Filters` label in v1.
 
+### 6. Waitlist
+
+The public page should include a quiet waitlist entry point for visitors who want their own wall.
+
+Expected behavior:
+
+- Waitlist is visible but secondary to the object wall.
+- The form captures email address at minimum.
+- Optional name or handle can be deferred.
+- Submission gives clear success feedback.
+- The waitlist should not interrupt browsing with a modal or aggressive prompt.
+- Waitlist copy should frame the product as creating your own object wall or public taste profile, not as signing up for a shopping app.
+
+Suggested public copy direction:
+
+- `Want your own object wall?`
+- `Join the waitlist for Objects of Interest.`
+
 ## View Modes
 
-Wishlist supports two public wall views because the product is design-first and browsing mode changes the feel of the collection.
+Objects of Interest supports two public wall views because the product is design-first and browsing mode changes the feel of the collection.
 
 ### Strict Grid
 
@@ -245,7 +326,7 @@ Sorting:
 
 ## Object Data Model
 
-Each wishlist object should support:
+Each object record should support:
 
 - id
 - name
@@ -363,7 +444,7 @@ Non-negotiables:
 
 ## Screens
 
-### Public Wishlist Page
+### Public Object Wall
 
 Intent: Let anyone browse the owner's taste through a beautiful wall of objects.
 
@@ -388,7 +469,7 @@ Key elements:
 
 ### Owner Add/Edit Object
 
-Intent: Let the owner quickly add or correct wishlist objects.
+Intent: Let the owner quickly add or correct objects.
 
 Key elements:
 
@@ -415,7 +496,7 @@ Key elements:
 
 ## Key States
 
-- Empty wishlist.
+- Empty object wall.
 - Loading image search.
 - Background removal in progress.
 - Image search failed.
@@ -429,12 +510,14 @@ Key elements:
 
 The MVP is successful if:
 
-- An object can be added from only a name.
-- The system can find and process a usable object image.
+- An object can be added from only a name, URL, image URL, or upload.
+- The system can turn rough input into a wall-ready object with a clean image and useful metadata.
 - The public wall feels polished, minimal, and visually distinctive.
 - Visitors can browse and filter without instruction.
 - The owner can replace poor automatic images.
 - The design feels like a public profile, not an admin database.
+- Visitors can join a waitlist without leaving the wall experience.
+- The first save creates a small transformation moment: the object feels cleaned, placed, and owned by the wall.
 
 ## Open Questions
 
@@ -458,12 +541,13 @@ Image files should not be stored in Postgres. Neon should store object metadata,
 Build a polished single-profile MVP with:
 
 - Public object wall.
-- Add object by name.
+- Add object by name, URL, image URL, or upload.
 - Hidden owner Studio route.
-- Automatic image search and background removal.
+- Automatic image search, metadata assistance, suggested tag, and background removal where available.
 - Manual image replacement.
 - Editorial tag filters.
 - Hover/focus/tap object annotations.
+- Public waitlist capture.
 - Responsive design.
 - Time-based product arrangement.
 
