@@ -10,9 +10,18 @@ function decodeHtml(value: string) {
     .trim();
 }
 
+function cleanText(value: string | undefined) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const cleaned = decodeHtml(value);
+  return cleaned ? cleaned : undefined;
+}
+
 function firstMatch(html: string, pattern: RegExp) {
   const match = html.match(pattern);
-  return match?.[1] ? decodeHtml(match[1]) : undefined;
+  return cleanText(match?.[1]);
 }
 
 function metaContent(html: string, key: string) {
@@ -24,12 +33,13 @@ function metaContent(html: string, key: string) {
 }
 
 function resolveUrl(value: string | undefined, baseUrl: URL) {
-  if (!value) {
+  const cleanedValue = cleanText(value);
+  if (!cleanedValue) {
     return undefined;
   }
 
   try {
-    return new URL(value, baseUrl).toString();
+    return new URL(cleanedValue, baseUrl).toString();
   } catch {
     return undefined;
   }
@@ -104,8 +114,13 @@ function productOffer(product: Record<string, unknown>) {
 
   const record = offer as Record<string, unknown>;
   return {
-    price: typeof record.price === "string" || typeof record.price === "number" ? String(record.price) : undefined,
-    currency: typeof record.priceCurrency === "string" ? record.priceCurrency : undefined
+    price:
+      typeof record.price === "string"
+        ? cleanText(record.price)
+        : typeof record.price === "number"
+          ? String(record.price)
+          : undefined,
+    currency: typeof record.priceCurrency === "string" ? cleanText(record.priceCurrency) : undefined
   };
 }
 
@@ -115,7 +130,7 @@ export function extractPageMetadata(html: string, pageUrl: URL): ExtractedPageMe
     .find((item): item is Record<string, unknown> => Boolean(item));
 
   const title =
-    (typeof product?.name === "string" ? product.name.trim() : undefined) ??
+    cleanText(typeof product?.name === "string" ? product.name : undefined) ??
     metaContent(html, "og:title") ??
     metaContent(html, "twitter:title") ??
     documentTitle(html);

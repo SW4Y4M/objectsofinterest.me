@@ -36,20 +36,55 @@ describe("extractPageMetadata", () => {
     });
   });
 
-  it("falls back through Open Graph, Twitter card, and document title", () => {
+  it("ignores blank JSON-LD product names and keeps falling back", () => {
     const html = `
       <html>
         <head>
           <title>Desk light</title>
-          <meta name="twitter:image" content="/twitter-light.webp" />
           <meta property="og:title" content="OG desk light" />
+          <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": "   "
+            }
+          </script>
         </head>
       </html>
     `;
 
     expect(extractPageMetadata(html, new URL("https://example.com/products/light"))).toEqual({
-      title: "OG desk light",
+      title: "OG desk light"
+    });
+  });
+
+  it("uses twitter card metadata when Open Graph metadata is missing", () => {
+    const html = `
+      <html>
+        <head>
+          <meta name="twitter:image" content="/twitter-light.webp" />
+          <meta name="twitter:title" content="Twitter desk light" />
+        </head>
+      </html>
+    `;
+
+    expect(extractPageMetadata(html, new URL("https://example.com/products/light"))).toEqual({
+      title: "Twitter desk light",
       imageUrl: "https://example.com/twitter-light.webp"
+    });
+  });
+
+  it("falls back to the document title when no richer title metadata exists", () => {
+    const html = `
+      <html>
+        <head>
+          <title>Desk light</title>
+        </head>
+      </html>
+    `;
+
+    expect(extractPageMetadata(html, new URL("https://example.com/products/light"))).toEqual({
+      title: "Desk light"
     });
   });
 
