@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSafeHttpUrl, isPrivateHostname, isSupportedImageContentType, isSupportedImagePath, parseHttpUrl } from "@/lib/urlIntake/safety";
+import { assertSafeHttpUrl, isPrivateHostname, isSupportedImageContentType, isSupportedImagePath, parseHttpUrl } from "@/lib/urlIntake/safety";
 
 describe("url intake safety helpers", () => {
   it("accepts http and https URLs", () => {
@@ -31,8 +31,8 @@ describe("url intake safety helpers", () => {
   });
 
   it("returns safe http urls when they are not private", () => {
-    expect(getSafeHttpUrl("https://example.com/path")).toEqual(new URL("https://example.com/path"));
-    expect(getSafeHttpUrl("https://localhost/path")).toBeNull();
+    expect(assertSafeHttpUrl("https://example.com/path")).toEqual(new URL("https://example.com/path"));
+    expect(assertSafeHttpUrl("https://localhost/path")).toBeNull();
   });
 
   it("detects supported image paths", () => {

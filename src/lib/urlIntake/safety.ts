@@ -60,7 +60,7 @@ export function isSupportedImageContentType(contentType: string | null) {
   return SUPPORTED_IMAGE_CONTENT_TYPES.has(mimeType);
 }
 
-export function getSafeHttpUrl(value: string) {
+export function assertSafeHttpUrl(value: string) {
   const url = parseHttpUrl(value);
   if (!url || isPrivateHostname(url.hostname)) {
     return null;
