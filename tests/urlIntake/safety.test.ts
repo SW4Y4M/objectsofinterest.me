@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isPrivateHostname, isSupportedImageContentType, isSupportedImagePath, parseHttpUrl } from "@/lib/urlIntake/safety";
+import { getSafeHttpUrl, isPrivateHostname, isSupportedImageContentType, isSupportedImagePath, parseHttpUrl } from "@/lib/urlIntake/safety";
 
 describe("url intake safety helpers", () => {
   it("accepts http and https URLs", () => {
@@ -15,12 +15,24 @@ describe("url intake safety helpers", () => {
 
   it("detects private or local hostnames", () => {
     expect(isPrivateHostname("localhost")).toBe(true);
+    expect(isPrivateHostname("foo.localhost")).toBe(true);
+    expect(isPrivateHostname("localhost.evil.com")).toBe(false);
     expect(isPrivateHostname("127.0.0.1")).toBe(true);
+    expect(isPrivateHostname("127.0.0.1.example.com")).toBe(false);
     expect(isPrivateHostname("10.1.2.3")).toBe(true);
     expect(isPrivateHostname("172.16.0.2")).toBe(true);
+    expect(isPrivateHostname("172.15.255.255")).toBe(false);
+    expect(isPrivateHostname("172.31.255.255")).toBe(true);
+    expect(isPrivateHostname("172.32.0.1")).toBe(false);
     expect(isPrivateHostname("192.168.1.4")).toBe(true);
+    expect(isPrivateHostname("169.254.1.1")).toBe(true);
     expect(isPrivateHostname("::1")).toBe(true);
     expect(isPrivateHostname("example.com")).toBe(false);
+  });
+
+  it("returns safe http urls when they are not private", () => {
+    expect(getSafeHttpUrl("https://example.com/path")).toEqual(new URL("https://example.com/path"));
+    expect(getSafeHttpUrl("https://localhost/path")).toBeNull();
   });
 
   it("detects supported image paths", () => {

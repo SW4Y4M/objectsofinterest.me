@@ -1,5 +1,12 @@
 export type UrlIntakeReason = "no_image_found" | "fetch_failed" | "unsupported_image" | "unsafe_url";
 
+export type UrlIntakePageMetadata = {
+  canonicalUrl?: string;
+  imageUrl?: string;
+  price?: string;
+  currency?: string;
+};
+
 export type UrlIntakeImageResult = {
   kind: "image";
   originalUrl: string;
@@ -8,14 +15,10 @@ export type UrlIntakeImageResult = {
   sourceUrl?: string;
 };
 
-export type UrlIntakePageResult = {
+export type UrlIntakePageResult = UrlIntakePageMetadata & {
   kind: "page";
   sourceUrl: string;
-  canonicalUrl?: string;
   suggestedName?: string;
-  imageUrl?: string;
-  price?: string;
-  currency?: string;
 };
 
 export type UrlIntakeNeedsImageResult = {
@@ -27,10 +30,6 @@ export type UrlIntakeNeedsImageResult = {
 
 export type UrlIntakeResult = UrlIntakeImageResult | UrlIntakePageResult | UrlIntakeNeedsImageResult;
 
-export type ExtractedPageMetadata = {
+export type ExtractedPageMetadata = UrlIntakePageMetadata & {
   title?: string;
-  canonicalUrl?: string;
-  imageUrl?: string;
-  price?: string;
-  currency?: string;
 };
