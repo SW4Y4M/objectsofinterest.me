@@ -18,10 +18,12 @@ test("unlocked studio shows add, management, and public preview surfaces", async
   await expect(page).toHaveURL(/\/studio$/);
   await expect(page.getByRole("heading", { name: "Add object" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Manage objects" })).toBeVisible();
-  await expect(page.getByLabel("Paste a URL or add an image")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Fetch details" })).toBeVisible();
   await expect(page.getByTestId("studio-object-card")).toHaveCount(12);
   await expect(page.locator("[data-object-tile]")).toHaveCount(10);
+  await expect(page.getByRole("button", { name: "Add object" })).toBeVisible();
+  await page.getByRole("button", { name: "Add object" }).click();
+  await expect(page.getByLabel("Paste a URL or add an image")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Fetch details" })).toBeVisible();
 });
 
 test("only one object editor is expanded at a time", async ({ page }) => {
