@@ -37,7 +37,7 @@ describe("UrlIntakeService", () => {
     await service.intake("https://shop.example.com/products/kettle");
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? [];
+    const [requestUrl, requestInit] = fetchMock.mock.calls[0] as unknown as [RequestInfo | URL, RequestInit];
     expect(requestUrl).toEqual(new URL("https://shop.example.com/products/kettle"));
     expect(requestInit).toMatchObject({
       redirect: "follow",
@@ -99,16 +99,16 @@ describe("UrlIntakeService", () => {
 
   it("returns fetch_failed when the response content-length exceeds the page limit", async () => {
     const text = vi.fn(async () => "<html><head><meta property=\"og:image\" content=\"/too-big.jpg\" /></head></html>");
-    const fetchMock = vi.fn(async () =>
-      ({
+    const fetchMock = vi.fn(async () => {
+      return {
         ok: true,
         headers: new Headers({
           "content-type": "text/html",
           "content-length": "51"
         }),
         text
-      }) as Response
-    );
+      } as unknown as Response;
+    });
     const service = new UrlIntakeService({ fetch: fetchMock, maxPageBytes: 50 });
 
     await expect(service.intake("https://example.com/oversized-header")).resolves.toEqual({
@@ -121,16 +121,16 @@ describe("UrlIntakeService", () => {
 
   it("returns fetch_failed when the HTML body exceeds the page limit", async () => {
     const text = vi.fn(async () => "<html>".padEnd(51, "x"));
-    const fetchMock = vi.fn(async () =>
-      ({
+    const fetchMock = vi.fn(async () => {
+      return {
         ok: true,
         headers: new Headers({
           "content-type": "text/html",
           "content-length": "10"
         }),
         text
-      }) as Response
-    );
+      } as unknown as Response;
+    });
     const service = new UrlIntakeService({ fetch: fetchMock, maxPageBytes: 50 });
 
     await expect(service.intake("https://example.com/oversized-body")).resolves.toEqual({
