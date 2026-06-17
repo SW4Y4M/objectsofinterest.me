@@ -11,6 +11,8 @@ import { FakeObjectStorageProvider, VercelBlobStorageProvider } from "@/lib/imag
 import type { ImagePipelineResult } from "@/lib/image/types";
 import { createObjectRepository } from "@/lib/repositories/objects";
 import { requireStudioSession } from "@/lib/studio/auth";
+import { previewStateFromUrlIntakeResult, type UrlIntakePreviewState } from "@/app/studio/urlIntakeState";
+import { UrlIntakeService } from "@/lib/urlIntake/service";
 
 function createImageServices() {
   const search =
@@ -50,11 +52,13 @@ function parseWishlistObjectFormData(formData: FormData) {
 }
 
 function toStudioCreateInput(parsed: CreateWishlistObjectInput, imageResult: ImagePipelineResult) {
+  const sourceUrl = parsed.sourceUrl ?? parsed.imageUrl ?? null;
+
   return {
     name: parsed.name,
     slug: createSlug(parsed.name),
     editorialTag: parsed.editorialTag,
-    sourceUrl: parsed.sourceUrl ?? null,
+    sourceUrl,
     price: parsed.price || null,
     currency: parsed.currency || null,
     note: parsed.note || null,
@@ -186,6 +190,26 @@ export async function addObjectWithState(_previousState: StudioActionState, form
     message: "Object added.",
     fieldErrors: {}
   };
+}
+
+export async function previewUrlIntakeWithState(
+  _previousState: UrlIntakePreviewState,
+  formData: FormData
+): Promise<UrlIntakePreviewState> {
+  await requireStudioSession();
+  const url = fieldValue(formData, "captureUrl");
+
+  if (!url) {
+    return {
+      status: "error",
+      message: "Paste a URL first.",
+      fieldErrors: { captureUrl: "Paste a URL first." },
+      values: {}
+    };
+  }
+
+  const service = new UrlIntakeService();
+  return previewStateFromUrlIntakeResult(await service.intake(url));
 }
 
 export async function editObjectWithState(_previousState: StudioActionState, formData: FormData): Promise<StudioActionState> {
