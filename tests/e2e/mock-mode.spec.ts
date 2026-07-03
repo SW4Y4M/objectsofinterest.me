@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { SEED_VISIBLE_NAMES, STUDIO_PASSCODE, tileButton } from "./helpers";
 
 test("mock mode renders the 10-object preview wall", async ({ page }) => {
   await page.goto("/");
@@ -47,10 +48,12 @@ test("grid view keeps each mock image inside its tile", async ({ page }) => {
 
 test("mock mode studio unlock shows the same preview set", async ({ page }) => {
   await page.goto("/studio/unlock");
-  await page.getByLabel("Passcode").fill("12345");
+  await page.getByLabel("Passcode").fill(STUDIO_PASSCODE);
   await page.getByRole("button", { name: "Unlock" }).click();
 
   await expect(page).toHaveURL(/\/studio$/);
   await expect(page.getByText("Mock data")).toBeVisible();
-  await expect(page.locator("[data-object-tile]")).toHaveCount(10);
+  for (const name of SEED_VISIBLE_NAMES) {
+    await expect(tileButton(page, name)).toBeVisible();
+  }
 });

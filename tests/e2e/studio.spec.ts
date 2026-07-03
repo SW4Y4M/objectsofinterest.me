@@ -1,10 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-
-async function unlockStudio(page: Page) {
-  await page.goto("/studio/unlock");
-  await page.getByLabel("Passcode").fill("12345");
-  await page.getByRole("button", { name: "Unlock" }).click();
-}
+import { expect, test } from "@playwright/test";
+import { SEED_VISIBLE_NAMES, studioCard, tileButton, unlockStudio } from "./helpers";
 
 test("studio requires unlock", async ({ page }) => {
   await page.goto("/studio");
@@ -18,15 +13,21 @@ test("unlocked studio shows add, management, and public preview surfaces", async
   await expect(page).toHaveURL(/\/studio$/);
   await expect(page.getByRole("heading", { name: "Add object" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Manage objects" })).toBeVisible();
-  await expect(page.getByTestId("studio-object-card")).toHaveCount(12);
+
+  // Seed-scoped instead of exact global count: mutations from other specs may add cards.
+  for (const name of SEED_VISIBLE_NAMES) {
+    await expect(studioCard(page, name)).toBeVisible();
+  }
+  await expect(studioCard(page, "Blueprint notebook")).toBeVisible(); // draft still managed
   await expect(page.getByTestId("masonry-wall")).toBeVisible();
-  await expect(page.getByTestId("masonry-wall").getByRole("article")).toHaveCount(10);
+  await expect(tileButton(page, "Brass oil burner")).toBeVisible(); // visible seed on preview wall
 });
 
 test("add drawer reveals the URL preview controls", async ({ page }) => {
   await unlockStudio(page);
 
   await expect(page.getByRole("button", { name: "Add object" })).toBeVisible();
+  await expect(page.getByLabel("Paste a URL or add an image")).toHaveCount(0);
   await page.getByRole("button", { name: "Add object" }).click();
   await expect(page.getByLabel("Paste a URL or add an image")).toBeVisible();
   await expect(page.getByRole("button", { name: "Fetch details" })).toBeVisible();
@@ -40,7 +41,7 @@ test("only one object editor is expanded at a time", async ({ page }) => {
 
   await page.getByRole("button", { name: /Edit Aluminum drafting pen/ }).click();
   await expect(page.getByLabel("Object name")).toHaveValue("Aluminum drafting pen");
-  await expect(page.locator('input[value="Brass oil burner"]')).toHaveCount(0);
+  await expect(page.getByRole("article", { name: "Brass oil burner" }).getByLabel("Object name")).toHaveCount(0);
 });
 
 test("mobile studio keeps compact cards, replacement controls, and archive confirmation reachable", async ({ page }) => {
