@@ -1,22 +1,24 @@
 import { expect, test } from "@playwright/test";
 import { SEED_VISIBLE_NAMES, STUDIO_PASSCODE, tileButton } from "./helpers";
 
-test("mock mode renders the 10-object preview wall", async ({ page }) => {
+test("mock mode renders the seed preview wall with loaded images", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: /Objects of Interest/ })).toBeVisible();
-  const tiles = page.locator("[data-object-tile]");
-  await expect(tiles).toHaveCount(10);
 
-  for (let index = 0; index < 10; index += 1) {
-    const tile = tiles.nth(index);
-    await tile.scrollIntoViewIfNeeded();
-    await expect.poll(async () => {
-      return tile.locator("img").evaluate((image) => {
-        const element = image as HTMLImageElement;
-        return element.complete && element.naturalWidth > 0 && !element.currentSrc.startsWith("data:");
-      });
-    }).toBe(true);
+  // Seed-scoped: other specs share one mock store and may add objects during the run,
+  // so verify each of the 10 seed objects renders a real (non-data) loaded image.
+  for (const name of SEED_VISIBLE_NAMES) {
+    const image = tileButton(page, name).locator("img");
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(async () => {
+        return image.evaluate((el) => {
+          const img = el as HTMLImageElement;
+          return img.complete && img.naturalWidth > 0 && !img.currentSrc.startsWith("data:");
+        });
+      })
+      .toBe(true);
   }
 });
 
