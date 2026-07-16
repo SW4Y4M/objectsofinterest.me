@@ -1,15 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import type { WaitlistActionState } from "@/app/waitlist/actionState";
 import { createWaitlistRepository } from "@/lib/repositories/waitlist";
-
-export type WaitlistActionState = {
-  status: "idle" | "success" | "error";
-  message: string | null;
-  fieldErrors: Record<string, string>;
-};
-
-export const emptyWaitlistState: WaitlistActionState = { status: "idle", message: null, fieldErrors: {} };
 
 const schema = z.object({ email: z.string().trim().email("Enter a valid email address.") });
 

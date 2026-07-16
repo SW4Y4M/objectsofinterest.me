@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { emptyWaitlistState, joinWaitlist } from "@/app/waitlist/actions";
+import { emptyWaitlistState } from "@/app/waitlist/actionState";
+import { joinWaitlist } from "@/app/waitlist/actions";
 
 export function WaitlistPanel() {
   const [state, action, pending] = useActionState(joinWaitlist, emptyWaitlistState);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { emptyWaitlistState, joinWaitlist } from "@/app/waitlist/actions";
+import { emptyWaitlistState } from "@/app/waitlist/actionState";
+import { joinWaitlist } from "@/app/waitlist/actions";
 
 function form(email: string) {
   const fd = new FormData();
