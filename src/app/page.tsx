@@ -1,11 +1,9 @@
-import { ObjectWallPage } from "@/components/wall/ObjectWallPage";
-import { getWishlistMode } from "@/lib/config/wishlistMode";
-import { createObjectRepository } from "@/lib/repositories/objects";
+import { LandingClient } from "@/components/landing/LandingClient";
 
-export default async function PublicPage() {
-  const repository = createObjectRepository();
-  const objects = await repository.listPublic();
-  const mode = getWishlistMode();
-
-  return <ObjectWallPage objects={objects} showDebugOutlines={mode === "mock"} />;
+export default function LandingPage() {
+  return (
+    <main>
+      <LandingClient />
+    </main>
+  );
 }
