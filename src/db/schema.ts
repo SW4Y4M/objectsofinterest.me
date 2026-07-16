@@ -24,3 +24,12 @@ export const wishlistObjects = pgTable("wishlist_objects", {
 
 export type WishlistObjectRow = typeof wishlistObjects.$inferSelect;
 export type NewWishlistObjectRow = typeof wishlistObjects.$inferInsert;
+
+export const waitlistSignups = pgTable("waitlist_signups", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+
+export type WaitlistSignupRow = typeof waitlistSignups.$inferSelect;
+export type NewWaitlistSignupRow = typeof waitlistSignups.$inferInsert;
