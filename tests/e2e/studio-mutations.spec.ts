@@ -47,7 +47,7 @@ test("archiving is a two-step action that removes the object from the wall", asy
   await createObject(page, name);
 
   // It starts visible on the public wall.
-  await page.goto("/");
+  await page.goto("/wall");
   await expect(tileButton(page, name)).toBeVisible();
   await page.goBack();
 
@@ -67,7 +67,7 @@ test("archiving is a two-step action that removes the object from the wall", asy
   await expect(card.getByText("Archived").first()).toBeVisible();
 
   // It disappears from the public wall.
-  await page.goto("/");
+  await page.goto("/wall");
   await expect(tileButton(page, name)).toHaveCount(0);
 });
 
@@ -78,6 +78,6 @@ test("seed drafts are managed in the studio but never public", async ({ page }) 
   await expect(draft).toBeVisible();
   await expect(draft.getByText("Draft awaiting a usable image")).toBeVisible();
 
-  await page.goto("/");
+  await page.goto("/wall");
   await expect(tileButton(page, "Blueprint notebook")).toHaveCount(0);
 });

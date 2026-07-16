@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { tileButton } from "./helpers";
 
 test("public page shows the profile identity and view controls", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
 
   await expect(page.getByRole("heading", { name: /Objects of Interest/ })).toBeVisible();
   await expect(page.getByRole("button", { name: "Masonry view" })).toBeVisible();
@@ -10,14 +10,14 @@ test("public page shows the profile identity and view controls", async ({ page }
 });
 
 test("public page can switch wall views", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
 
   await page.getByRole("button", { name: "Strict grid view" }).click();
   await expect(page.locator("[data-testid='strict-grid-wall']")).toBeVisible();
 });
 
 test("filtering by a tag shows only that tag's objects", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
 
   await page.getByRole("navigation", { name: "Editorial tags" }).getByRole("button", { name: "Home" }).click();
 
@@ -34,7 +34,7 @@ test("filtering by a tag shows only that tag's objects", async ({ page }) => {
 });
 
 test("wall view choice persists across reload via localStorage", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
   await expect(page.getByTestId("masonry-wall")).toBeVisible();
 
   await page.getByRole("button", { name: "Strict grid view" }).click();
@@ -47,14 +47,14 @@ test("wall view choice persists across reload via localStorage", async ({ page }
 });
 
 test("the studio link navigates to the locked studio", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
   await page.getByRole("link", { name: "Open studio" }).click();
   await expect(page).toHaveURL(/\/studio\/unlock/);
   await expect(page.getByRole("heading", { name: "Studio" })).toBeVisible();
 });
 
 test("draft objects never appear on the public wall", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
   for (const name of ["Blueprint notebook", "Archive tea tin"]) {
     await expect(tileButton(page, name)).toHaveCount(0);
   }

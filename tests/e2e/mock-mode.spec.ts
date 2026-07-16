@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { SEED_VISIBLE_NAMES, STUDIO_PASSCODE, tileButton } from "./helpers";
 
 test("mock mode renders the seed preview wall with loaded images", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
 
   await expect(page.getByRole("heading", { name: /Objects of Interest/ })).toBeVisible();
 
@@ -23,7 +23,7 @@ test("mock mode renders the seed preview wall with loaded images", async ({ page
 });
 
 test("grid view keeps each mock image inside its tile", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/wall");
 
   await page.evaluate(() => window.localStorage.setItem("wishlist:view", "grid"));
   await page.reload();

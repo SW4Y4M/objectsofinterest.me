@@ -20,7 +20,7 @@ test("add an object by name only -> Visible, listed, and on the wall", async ({ 
   await expect(card).toBeVisible();
   await expect(card.getByText("Visible")).toBeVisible();
 
-  await page.goto("/");
+  await page.goto("/wall");
   await expect(tileButton(page, name)).toBeVisible();
 });
 

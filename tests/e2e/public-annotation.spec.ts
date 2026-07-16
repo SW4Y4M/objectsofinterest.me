@@ -3,7 +3,7 @@ import { tileButton } from "./helpers";
 
 test.describe("annotation reveal", () => {
   test("focusing a tile reveals its annotation with metadata and source link", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/wall");
 
     const brass = tileButton(page, "Brass oil burner");
     await brass.focus(); // keyboard focus path (works on desktop and mobile projects)
@@ -19,7 +19,7 @@ test.describe("annotation reveal", () => {
   });
 
   test("an object without a source shows no source link", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/wall");
     await tileButton(page, "Aluminum drafting pen").focus();
 
     await expect(page.getByRole("heading", { level: 2, name: "Aluminum drafting pen" })).toBeVisible();
@@ -29,7 +29,7 @@ test.describe("annotation reveal", () => {
 
 test.describe("annotation pinning", () => {
   test("tapping toggles the annotation and tapping outside dismisses it", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/wall");
 
     const brass = tileButton(page, "Brass oil burner");
     const heading = page.getByRole("heading", { level: 2, name: "Brass oil burner" });
