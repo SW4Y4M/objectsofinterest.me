@@ -5,6 +5,15 @@ Product: Objects of Interest
 Audience: One public profile owner, public visitors
 Working public identity: @swayam's Objects of Interest
 
+> **Direction update (2026-07-03) — pre-launch waitlist landing.** For the pre-launch moment,
+> the public entry `/` is now a **waitlist-first landing** whose hero is a *truly-infinite,
+> drag-to-explore WebGL canvas* of object cutouts, with a "Build your objectsofinterest" email
+> capture. This deliberately overrides two rules below — "avoid a marketing landing page as the
+> first screen" and the "not infinite / not Pinterest-like" layout guidance — **for the landing
+> only**. The finite, ordered editorial wall described in this spec remains the design for the
+> **real product** (it already exists, now served at `/wall`). Depth-as-recency and an alt grid
+> view are product backlog. See `docs/superpowers/specs/2026-07-03-infinite-canvas-waitlist-landing-design.md`.
+
 ## Product Summary
 
 Objects of Interest is a polished public profile for personal taste: a self-portrait made of objects someone notices, wants, researches, or aspires to own. The owner can add an object from a name, URL, screenshot, image, or product reference. The product should give back more than the owner put in by turning that rough input into a clean object cutout, a title guess, a source, optional price context, a suggested tag, and a beautiful placement on the wall.

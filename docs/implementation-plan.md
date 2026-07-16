@@ -3,6 +3,12 @@
 Status: Draft v0.1
 Spec: `docs/wishlist-spec.md`
 
+> **Direction update (2026-07-03).** Pre-launch, `/` is the **infinite-canvas waitlist landing**
+> (see `docs/superpowers/specs/2026-07-03-infinite-canvas-waitlist-landing-design.md`), and the
+> public object wall described under Routes below moves to **`/wall`**. Studio routes are unchanged.
+> The wall, Studio, image pipeline, and URL intake in this plan remain the design for the product
+> after launch.
+
 ## Build Goal
 
 Build a production-polished v1 of Wishlist: a one-person public object wall with a hidden owner Studio, automatic image sourcing, background removal, and two public view modes.
